@@ -2,16 +2,24 @@
 
 using DG.Tweening;
 
-using UnityEngine.Assertions;
-
 namespace LD48Project {
 	public sealed class ElectricCoilController : MonoBehaviour {
 		[Header("Parameters")]
 		public float ReloadTime           = 5f;
 		public float GraphicsShowTime     = 0.1f;
 		public float ActiveReloadTimeMult = 2f;
+		public float UiAnimDuration       = 0.5f;
 		[Header("Dependencies")]
 		public GameObject GraphicsRoot;
+		[Space]
+		public GameObject       UiRoot;
+		public GameObject       ReloadProgressBarRoot;
+		public ShapeProgressBar ReloadProgressBar;
+		public ShapeButton      Button;
+		public GameObject       ReadyTextRoot;
+		public Transform        ButtonRoot;
+		public Transform        ButtonAppearPos;
+		public Transform        ButtonDisappearPos;
 
 		bool _isActive;
 
@@ -19,31 +27,80 @@ namespace LD48Project {
 		float _reloadTimer;
 
 		Tween _dischargeAnim;
+		Tween _uiAnim;
+
+		bool IsReady {
+			get => _isReady;
+			set {
+				_isReady       = value;
+				Button.Enabled = IsReady;
+				ReadyTextRoot.SetActive(IsReady);
+				ReloadProgressBarRoot.SetActive(!IsReady);
+			}
+		}
+
+		void Start() {
+			Button.AddClickAction(TryDischarge);
+			UiRoot.SetActive(false);
+			ButtonRoot.localPosition = ButtonDisappearPos.localPosition;
+		}
 
 		void Update() {
-			if ( !_isReady ) {
+			if ( !IsReady ) {
 				_reloadTimer = Mathf.Max(_reloadTimer - Time.deltaTime * (_isActive ? ActiveReloadTimeMult : 1f), 0f);
+				ReloadProgressBar.Progress = 1f - _reloadTimer / ReloadTime;
 				if ( Mathf.Approximately(_reloadTimer, 0f) ) {
-					_isReady = true;
+					IsReady = true;
 				}
 			}
 
 			if ( !_isActive ) {
 				return;
 			}
-			if ( _isReady && Input.GetKeyDown(KeyCode.Space) ) {
-				Discharge();
+			if ( IsReady && Input.GetKeyDown(KeyCode.Space) ) {
+				TryDischarge();
 			}
 		}
 
 		public void SetActive(bool isActive) {
 			_isActive = isActive;
 
-			// TODO: show help + discharge button
+			Button.Enabled = IsReady;
+			if ( _isActive ) {
+				ShowUi();
+			} else {
+				HideUi();
+			}
 		}
 
-		void Discharge() {
-			Assert.IsTrue(_isReady);
+		void ShowUi() {
+			UiRoot.SetActive(true);
+			_uiAnim?.Kill();
+			_uiAnim = DOTween.Sequence()
+				.Append(ButtonRoot.DOLocalMove(ButtonAppearPos.localPosition,
+						UiAnimDuration * Vector2.Distance(ButtonRoot.localPosition, ButtonAppearPos.localPosition) /
+						Vector2.Distance(ButtonAppearPos.localPosition, ButtonDisappearPos.localPosition))
+					.SetEase(Ease.InSine));
+			_uiAnim.onComplete += () => { _uiAnim = null; };
+		}
+
+		void HideUi() {
+			_uiAnim?.Kill();
+			_uiAnim = DOTween.Sequence()
+				.Append(ButtonRoot.DOLocalMove(ButtonDisappearPos.localPosition,
+						UiAnimDuration * Vector2.Distance(ButtonRoot.localPosition, ButtonDisappearPos.localPosition) /
+						Vector2.Distance(ButtonAppearPos.localPosition, ButtonDisappearPos.localPosition))
+					.SetEase(Ease.InSine));
+			_uiAnim.onComplete += () => {
+				UiRoot.SetActive(false);
+				_uiAnim = null;
+			};
+		}
+
+		void TryDischarge() {
+			if ( !IsReady ) {
+				return;
+			}
 			_dischargeAnim?.Kill();
 			_dischargeAnim = DOTween.Sequence()
 				.AppendCallback(() => GraphicsRoot.SetActive(true))
@@ -52,7 +109,7 @@ namespace LD48Project {
 
 			// TODO: deal damage
 
-			_isReady     = false;
+			IsReady     = false;
 			_reloadTimer = ReloadTime;
 		}
 	}
