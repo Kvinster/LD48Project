@@ -16,7 +16,7 @@ namespace LD48Project {
 
 		public bool IsActive { get; set; }
 
-		bool  _isReady;
+		bool  _isReady = true;
 		float _reloadTimer;
 
 		void Update() {
