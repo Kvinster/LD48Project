@@ -3,16 +3,23 @@ using UnityEngine.Assertions;
 
 using System;
 
+using DG.Tweening;
+
 namespace LD48Project {
 	public sealed class Submarine : MonoBehaviour {
 		public static Submarine Instance { get; private set; }
 
 		[Header("Parameters")]
 		public float StartHp = 100;
+		public float DeathAnimDuration = 1f;
 		[Header("Dependencies")]
+		public DeathScreen      DeathScreen;
+		public SubWater         SubWater;
 		public ShapeProgressBar HealthProgressBar;
 
 		float _curHp;
+
+		Sequence _deathAnim;
 
 		public float CurHp {
 			get => _curHp;
@@ -32,6 +39,12 @@ namespace LD48Project {
 		void Awake() {
 			Assert.IsFalse(Instance);
 			Instance = this;
+		}
+
+		void OnDestroy() {
+			if ( Instance == this ) {
+				Instance = null;
+			}
 		}
 
 		void Start() {
@@ -55,9 +68,16 @@ namespace LD48Project {
 
 			if ( Mathf.Approximately(CurHp, 0f) ) {
 				IsAlive = false;
-				Debug.Log("bleugh");
-				// TODO: die
+				PlayDeathAnim();
 			}
+		}
+
+		void PlayDeathAnim() {
+			Assert.IsNull(_deathAnim);
+			_deathAnim = DOTween.Sequence()
+				.Append(DOTween.To(() => SubWater.Level, x => SubWater.Level = x, 1f, DeathAnimDuration)
+					.SetEase(Ease.Linear));
+			_deathAnim.onComplete += DeathScreen.Show;
 		}
 	}
 }

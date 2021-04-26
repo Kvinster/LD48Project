@@ -26,6 +26,10 @@ namespace LD48Project {
 			}, MaxIdleIntensity, IdleAnimDuration / 2f)).SetLoops(-1, LoopType.Yoyo);
 		}
 
+		void OnDestroy() {
+			_idleAnim?.Kill();
+		}
+
 		void SetIntensity(float intensity) {
 			var factor   = Mathf.Pow(2,intensity);
 			var newColor = new Color(RawColor.r * factor, RawColor.g * factor, RawColor.b * factor);

@@ -11,6 +11,7 @@ namespace LD48Project {
 		public float SpawnDistance;
 		[Header("Dependencies")]
 		public Transform  SpawnCenter;
+		public Transform  SpawnParent;
 		public GameObject Prefab;
 
 		float _spawnPeriod;
@@ -47,7 +48,7 @@ namespace LD48Project {
 			for ( var i = 0; i < Mathf.FloorToInt(_spawnBurstSize); ++i ) {
 				var pos = Quaternion.AngleAxis(Random.Range(0f, 360f), Vector3.forward) * Vector2.up *
 				          SpawnDistance + SpawnCenter.position;
-				Instantiate(Prefab, pos, Quaternion.identity, null);
+				Instantiate(Prefab, pos, Quaternion.identity, SpawnParent);
 			}
 		}
 	}
