@@ -124,7 +124,6 @@ namespace LD48Project {
 			}
 			_joint               = gameObject.AddComponent<FixedJoint2D>();
 			_joint.connectedBody = rigidbody;
-			_joint.breakForce    = 0.12f;
 
 			_attached = true;
 		}

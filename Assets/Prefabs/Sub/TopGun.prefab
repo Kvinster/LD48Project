@@ -188,7 +188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReloadTime: 0.5
   BulletSpeed: 10
-  RotationSpeed: 30
+  RotationSpeed: 90
   MinAngle: -85
   MaxAngle: 85
   GunRotationRoot: {fileID: 3371653214315249202}

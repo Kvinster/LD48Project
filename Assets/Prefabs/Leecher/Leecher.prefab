@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f2a3de43f94b56b2f6a17e42f4661d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartHp: 5
+  StartHp: 1
   RawColor: {r: 0.54901963, g: 0.4745098, b: 0.101960786, a: 1}
   MinIntensity: 0
   MaxIntensity: 1
