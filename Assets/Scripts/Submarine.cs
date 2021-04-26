@@ -38,6 +38,14 @@ namespace LD48Project {
 			CurHp = StartHp;
 		}
 
+		public void TryAddHp(float hp) {
+			if ( !IsAlive ) {
+				return;
+			}
+
+			CurHp = Mathf.Min(CurHp + hp, StartHp);
+		}
+
 		public void TakeDamage(float damage) {
 			if ( !IsAlive ) {
 				return;
