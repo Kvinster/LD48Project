@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using Shapes;
+
 namespace LD48Project.Stations {
 	public sealed class ElectricCoilStation : BaseStation {
 		[Space]
@@ -25,6 +27,7 @@ namespace LD48Project.Stations {
 		void OnCurChargesChanged(int curCharges) {
 			if ( IsActive && (curCharges == 0) ) {
 				StopActiveAnim(true);
+				Graphic.Color = Color.gray;
 			}
 		}
 	}
