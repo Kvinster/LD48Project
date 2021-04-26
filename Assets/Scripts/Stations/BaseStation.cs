@@ -18,6 +18,8 @@ namespace LD48Project.Stations {
 
 		protected bool IsActive;
 
+		protected virtual bool PlayActiveAnim => true;
+
 		Sequence _transitionAnim;
 
 		protected virtual void Reset() {
@@ -38,18 +40,20 @@ namespace LD48Project.Stations {
 		}
 
 		protected virtual void Update() {
-			if ( Graphic && IsActive && (_transitionAnim == null) ) {
+			if ( Graphic && IsActive && PlayActiveAnim && (_transitionAnim == null) ) {
 				Graphic.DashOffset += ActiveRotationSpeed * Time.deltaTime;
 				Graphic.DashOffset %= 1;
 			}
 		}
 
-		public virtual void Activate() {
+		public virtual void Activate(bool startAnim = true) {
 			Assert.IsFalse(IsActive);
 
 			IsActive = true;
 
-			StartActiveAnim();
+			if ( startAnim ) {
+				StartActiveAnim();
+			}
 		}
 
 		public virtual void Deactivate() {
@@ -60,7 +64,7 @@ namespace LD48Project.Stations {
 			StopActiveAnim();
 		}
 
-		void StartActiveAnim() {
+		protected void StartActiveAnim() {
 			if ( !Graphic ) {
 				return;
 			}
@@ -71,9 +75,9 @@ namespace LD48Project.Stations {
 			_transitionAnim.onComplete += () => { _transitionAnim = null; };
 		}
 
-		void StopActiveAnim() {
+		protected void StopActiveAnim(bool force = false) {
 			_transitionAnim?.Kill();
-			if ( !Graphic ) {
+			if ( !Graphic || (!force && !PlayActiveAnim) ) {
 				_transitionAnim = null;
 				return;
 			}

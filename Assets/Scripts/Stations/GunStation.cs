@@ -5,8 +5,8 @@ namespace LD48Project.Stations {
 		[Space]
 		public GunController GunController;
 
-		public override void Activate() {
-			base.Activate();
+		public override void Activate(bool startAnim = true) {
+			base.Activate(startAnim);
 			GunController.IsActive = true;
 		}
 

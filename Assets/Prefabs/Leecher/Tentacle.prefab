@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ForceApplyPos: {fileID: 42328177043282997}
-  Force: 0.003
+  Force: 0.001
   Target: {fileID: 0}
 --- !u!1 &9003014298728518357
 GameObject:

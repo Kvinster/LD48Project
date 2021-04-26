@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using System;
+
 using DG.Tweening;
 
 namespace LD48Project {
@@ -9,6 +11,7 @@ namespace LD48Project {
 		public float GraphicsShowTime     = 0.1f;
 		public float ActiveReloadTimeMult = 2f;
 		public float UiAnimDuration       = 0.5f;
+		public int   StartCharges         = 5;
 		[Header("Dependencies")]
 		public GameObject GraphicsRoot;
 		[Space]
@@ -29,6 +32,16 @@ namespace LD48Project {
 		Tween _dischargeAnim;
 		Tween _uiAnim;
 
+		int _curCharges;
+
+		public int CurCharges {
+			get => _curCharges;
+			private set {
+				_curCharges = value;
+				OnCurChargesChanged?.Invoke(CurCharges);
+			}
+		}
+
 		bool IsReady {
 			get => _isReady;
 			set {
@@ -39,7 +52,11 @@ namespace LD48Project {
 			}
 		}
 
+		public Action<int> OnCurChargesChanged;
+
 		void Start() {
+			CurCharges = StartCharges;
+
 			Button.AddClickAction(TryDischarge);
 			UiRoot.SetActive(false);
 			ButtonRoot.localPosition = ButtonDisappearPos.localPosition;
@@ -57,7 +74,7 @@ namespace LD48Project {
 			if ( !_isActive ) {
 				return;
 			}
-			if ( IsReady && Input.GetKeyDown(KeyCode.Space) ) {
+			if ( IsReady && (CurCharges > 0) && Input.GetKeyDown(KeyCode.Space) ) {
 				TryDischarge();
 			}
 		}
@@ -67,7 +84,9 @@ namespace LD48Project {
 
 			Button.Enabled = IsReady;
 			if ( _isActive ) {
-				ShowUi();
+				if ( CurCharges > 0 ) {
+					ShowUi();
+				}
 			} else {
 				HideUi();
 			}
@@ -107,10 +126,20 @@ namespace LD48Project {
 				.AppendInterval(GraphicsShowTime)
 				.AppendCallback(() => GraphicsRoot.SetActive(false));
 
-			// TODO: deal damage
+			foreach ( var leecher in Leecher.Instances ) {
+				leecher.TryTakeDischarge();
+			}
 
-			IsReady     = false;
-			_reloadTimer = ReloadTime;
+			--CurCharges;
+
+			if ( CurCharges == 0 ) {
+				_reloadTimer = float.MaxValue;
+				HideUi();
+			} else {
+				_reloadTimer = ReloadTime;
+			}
+
+			IsReady = false;
 		}
 	}
 }
