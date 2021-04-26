@@ -51,6 +51,7 @@ namespace LD48Project {
 		public static StationsManager Instance { get; private set; }
 
 		public float             PlayerMovementSpeed = 1f;
+		public Submarine         Submarine;
 		public Transform         PlayerTransform;
 		public BaseStation       StartStation;
 		public List<BaseStation> Stations = new List<BaseStation>();
@@ -75,7 +76,7 @@ namespace LD48Project {
 		}
 
 		public void TryActivateStation(BaseStation station) {
-			if ( (ActiveStation == station) || (_activationAnim != null) ) {
+			if ( !Submarine.IsAlive || (ActiveStation == station) || (_activationAnim != null) ) {
 				return;
 			}
 			_activationAnim?.Kill();

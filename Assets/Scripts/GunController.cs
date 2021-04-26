@@ -27,7 +27,7 @@ namespace LD48Project {
 				}
 			}
 
-			if ( !IsActive ) {
+			if ( !IsActive || !Submarine.Instance.IsAlive ) {
 				return;
 			}
 			if ( Input.GetKey(KeyCode.A) ) {

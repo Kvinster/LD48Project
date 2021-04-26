@@ -71,7 +71,7 @@ namespace LD48Project {
 				}
 			}
 
-			if ( !_isActive ) {
+			if ( !_isActive || !Submarine.Instance.IsAlive ) {
 				return;
 			}
 			if ( IsReady && (CurCharges > 0) && Input.GetKeyDown(KeyCode.Space) ) {

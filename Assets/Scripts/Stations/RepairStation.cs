@@ -10,7 +10,7 @@ namespace LD48Project.Stations {
 		protected override void Update() {
 			base.Update();
 
-			if ( IsActive ) {
+			if ( IsActive && Submarine.IsAlive ) {
 				Submarine.TryAddHp(RepairSpeed * Time.deltaTime);
 			}
 		}
