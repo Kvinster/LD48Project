@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using System.Collections;
+
 using Random = UnityEngine.Random;
 
 namespace LD48Project {
@@ -11,7 +13,6 @@ namespace LD48Project {
 		const float DamagePerSecond = 0.25f;
 
 		public Transform ForceApplyPos;
-		public Transform Target;
 
 		Leecher _owner;
 
@@ -25,12 +26,18 @@ namespace LD48Project {
 		bool  _attached;
 		float _regenTimer;
 
+		Transform _target;
+
 		public bool IsAttached => _joint;
 
 		bool IsRegenerating => !Mathf.Approximately(_regenTimer, 0f);
 
-		void Start() {
+		IEnumerator Start() {
 			_rigidbody = GetComponent<Rigidbody2D>();
+
+			yield return null;
+
+			_target = Submarine.Instance.transform;
 		}
 
 		void Update() {
@@ -76,12 +83,12 @@ namespace LD48Project {
 		}
 
 		void TryWork() {
-			if ( _isIdle || IsAttached || IsRegenerating ) {
+			if ( !_target || _isIdle || IsAttached || IsRegenerating ) {
 				return;
 			}
 
 			var hit = Physics2D.Raycast(ForceApplyPos.position,
-				(Target.position - ForceApplyPos.position).normalized, float.MaxValue, 1 << 8);
+				(_target.position - ForceApplyPos.position).normalized, float.MaxValue, 1 << 8);
 			if ( !hit.collider ) {
 				return;
 			}
