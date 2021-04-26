@@ -11,11 +11,12 @@ namespace LD48Project {
 		[Header("Dependencies")]
 		public TMP_Text DepthText;
 
-		public float CurDepth { get; private set; } = 0f;
+		public float CurDepth         { get; private set; } = 0f;
+		public float DescendSpeedMult { get; set; }         = 1f;
 
 		void Update() {
 			if ( !Mathf.Approximately(DescendSpeed, 0f) ) {
-				CurDepth += DescendSpeed * Time.deltaTime;
+				CurDepth += DescendSpeed * DescendSpeedMult * Time.deltaTime;
 				UpdateText();
 			}
 		}
