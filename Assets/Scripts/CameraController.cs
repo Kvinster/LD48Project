@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using System.Collections;
+
 namespace LD48Project {
 	[RequireComponent(typeof(Camera))]
 	public sealed class CameraController : MonoBehaviour {
@@ -8,14 +10,17 @@ namespace LD48Project {
 		public float MaxCameraSize;
 		public float MinCameraSize;
 		[Header("Pan")]
-		public float PanSpeed;
+		public float MaxDistance = 10f;
 
 		Camera _camera;
 
-		Vector2 _mousePosition;
+		Vector2   _mousePosition;
+		Transform _subTransform;
 
-		void Start() {
-			_camera = GetComponent<Camera>();
+		IEnumerator Start() {
+			yield return null; // so that the sub can init
+			_camera       = GetComponent<Camera>();
+			_subTransform = Submarine.Instance.transform;
 		}
 
 		void Update() {
@@ -24,7 +29,13 @@ namespace LD48Project {
 					MinCameraSize, MaxCameraSize);
 			}
 			if ( Input.GetMouseButton(1) ) {
-				transform.Translate(_camera.ScreenToWorldPoint(_mousePosition) - _camera.ScreenToWorldPoint(Input.mousePosition));
+				var pos = transform.position;
+				var newPos = pos + _camera.ScreenToWorldPoint(_mousePosition) -
+				             _camera.ScreenToWorldPoint(Input.mousePosition);
+				if ( (!(Mathf.Abs(newPos.x - _subTransform.position.x) > MaxDistance)) &&
+				     (!(Mathf.Abs(newPos.y - _subTransform.position.y) > MaxDistance)) ) {
+					transform.position = newPos;
+				}
 			}
 
 			_mousePosition = Input.mousePosition;
